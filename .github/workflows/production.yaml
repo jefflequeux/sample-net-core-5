@@ -1,0 +1,52 @@
+name: Deploy to production
+
+on:
+  push:
+    branches: [ main, "*.*.*" ]
+    paths:
+      - production.yaml
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.x
+    - name: Restore dependencies
+      run: dotnet restore
+      working-directory: src
+    - name: Build
+      run: dotnet build --no-restore
+      working-directory: src
+    - name: Test
+      run: dotnet test --no-build --verbosity normal
+      working-directory: src
+    - name: Publish
+      run: dotnet publish src/sample-net-core-5/sample-net-core-5.csproj
+    - name: Zip the Build
+      run: zip -r package ./src/sample-net-core-5/bin/Debug/netcoreapp2.2/publish/
+#      run: zip -r package /home/runner/work/sample-net-core-5/sample-net-core-5/src/sample-net-core-5/bin/Debug/netcoreapp2.2/publish/
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.run_number }}
+        release_name: Release ${{ github.ref_name }}
+        body: New Release.
+        draft: false
+        prerelease: false
+  deploy-to-dev:
+    if: github.ref_name == 'develop'
+    runs-on: ubuntu-latest
+    needs: [build]
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.x
