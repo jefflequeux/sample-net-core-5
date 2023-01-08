@@ -26,3 +26,18 @@ jobs:
     - name: Test
       run: dotnet test --no-build --verbosity normal
       working-directory: src
+    - name: Publish
+      run: dotnet publish src/sample-net-core-5/sample-net-core-5.csproj
+    - name: Zip the Build
+      run: zip -r ${{ secrets.ReleaseZipName }} ./AppName/bin/Release/netcoreapp3.1/ 
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.run_number }}
+        release_name: Release ${{ github.ref }}
+        body: New Release.
+        draft: false
+        prerelease: false
