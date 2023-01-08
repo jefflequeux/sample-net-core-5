@@ -29,7 +29,8 @@ jobs:
     - name: Publish
       run: dotnet publish src/sample-net-core-5/sample-net-core-5.csproj
     - name: Zip the Build
-      run: zip -r package_develop /home/runner/work/sample-net-core-5/sample-net-core-5/src/sample-net-core-5/bin/Debug/netcoreapp2.2/publish/
+      run: zip -r package ./src/sample-net-core-5/bin/Debug/netcoreapp2.2/publish/
+#      run: zip -r package /home/runner/work/sample-net-core-5/sample-net-core-5/src/sample-net-core-5/bin/Debug/netcoreapp2.2/publish/
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1
@@ -37,7 +38,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         tag_name: ${{ github.run_number }}
-        release_name: Release ${{ github.ref }}
+        release_name: Release ${{ github.ref_name }}
         body: New Release.
         draft: false
         prerelease: false
