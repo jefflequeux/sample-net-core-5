@@ -16,3 +16,4 @@ jobs:
       run: |
         test="this !is! a real sample"
         test1=$(echo $test | grep -Eo "![^!]*!")
+        echo $test1
