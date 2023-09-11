@@ -1,0 +1,17 @@
+name: Testing script
+
+on:
+  push:
+    branches: [ main, "*.*.*" ]
+  pull_request:
+    branches: [ main, "*.*.*" ]
+  worflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Script
+      run: |
+        test="this !is! a real sample"
